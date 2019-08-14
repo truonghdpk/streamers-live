@@ -20,7 +20,7 @@ class StreamerBoard extends Component {
     };
 
     componentDidMount() {
-        // Run random function every 3 seconds
+        // Hit runRandom every 3 seconds
         setInterval(() => {
             this.runRandom();
         }, 3000);

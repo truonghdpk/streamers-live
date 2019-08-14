@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import styled from 'styled-components';
 import CountUp from 'react-countup';
+import {findWithAttr} from '../utils/common';
 
 const LineWrapper = styled.div`
     display: block;
@@ -47,33 +48,34 @@ const ItemScore = styled.div`
 
 class StreamerItem extends Component {
 
+    /**
+     * Get position to margin top display
+     * @param index
+     * @returns {number}
+     */
     getPositionByIndex = (index) => {
-        return index * 46; // Item height = 42
+        return index * 46; // Item height, default = 46
     };
 
-    findWithAttr = (array, attr, value) => {
-        for (let i = 0; i < array.length; i += 1) {
-            if (array[i][attr] === value) {
-                return i;
-            }
-        }
-        return -1;
-    };
-
+    /**
+     * By item, this function will recalculation the parameters with new item score updated
+     * @param item
+     * @param scoreEnd
+     * @returns {*}
+     */
     bindStream = (item, scoreEnd = null) => {
         const streamersDataLive = this.props.streamersDataLive;
 
         // Find index by userID
-        const index = this.findWithAttr(streamersDataLive, "userID", item.userID);
+        const index = findWithAttr(streamersDataLive, "userID", item.userID);
         // Get new item by new index
         const newItem = streamersDataLive[index];
 
-        // Add position field
+        // Add or update fields
         newItem.positionTop = this.getPositionByIndex(index);
         newItem.position = index + 1;
         newItem.scoreStart = scoreEnd ? scoreEnd : newItem.scoreEnd;
         newItem.scoreEnd = newItem.score;
-
         return newItem;
     };
 
@@ -88,14 +90,15 @@ class StreamerItem extends Component {
         if (prevProps.streamersDataLive !== this.props.streamersDataLive) {
             const userID = this.state.item.userID;
             // Find index by userId
-            const index = this.findWithAttr(this.props.streamersDataLive, "userID", userID);
+            const index = findWithAttr(this.props.streamersDataLive, "userID", userID);
             const newItem = this.props.streamersDataLive[index];
 
             // Get old score
-            const indexOldScore = this.findWithAttr(prevProps.streamersDataLive, "userID", userID);
+            const indexOldScore = findWithAttr(prevProps.streamersDataLive, "userID", userID);
             const oldItem = prevProps.streamersDataLive[indexOldScore];
             const scoreEnd = oldItem.scoreEnd;
 
+            // Re update item with new item score apply
             this.setState({item: this.bindStream(newItem, scoreEnd)})
         }
     }

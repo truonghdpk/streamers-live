@@ -1,0 +1,15 @@
+/**
+ * Find item in array with attribute and value
+ * @param array
+ * @param attr
+ * @param value
+ * @returns {number}
+ */
+export function findWithAttr(array, attr, value) {
+    for (let i = 0; i < array.length; i += 1) {
+        if (array[i][attr] === value) {
+            return i;
+        }
+    }
+    return -1;
+};

@@ -20,7 +20,7 @@ class StreamerBoard extends Component {
     };
 
     componentDidMount() {
-        // Hit runRandom every 3 seconds
+        // Hit runRandom every 3 seconds to change score of streamers
         setInterval(() => {
             this.runRandom();
         }, 3000);

@@ -67,33 +67,38 @@ class StreamerItem extends Component {
             // Find index by userId
             const index = findWithAttr(streamersDataLive, 'userID', userID);
             const newItem = streamersDataLive[index];
+            const newScore = newItem.score;
 
             // Get old score
             const indexOldScore = findWithAttr(streamersDataLive, 'userID', userID);
             const oldItem = streamersDataLive[indexOldScore];
-            const {scoreEnd} = oldItem;
+            const currentScore = oldItem.score;
 
             // Re update item with new item score apply
             // eslint-disable-next-line react/no-did-update-set-state
-            this.setState({item: this.bindStream(newItem, scoreEnd)});
+            this.setState({item: this.bindStream(newItem)});
 
-            // Test bind score
-            limitLoop(this.testBindScore, 30);
+            // Set max limit
+            console.log("---------");
+            console.log('new score:', newScore);
+            console.log('current score:', currentScore);
+            // this.counterRef.current.setLimitNumber(newScore);
+            if (newScore > currentScore) {
+                // Counter up
+                limitLoop(this.counterRef.current.increment, 30);
+            } else {
+                // Counter down
+                limitLoop(this.counterRef.current.decrement, 30);
+            }
         }
     }
-
-    testBindScore = () => {
-        // Get element
-        this.counterRef.current.increment();
-    };
 
     /**
      * By item, this function will recalculation the parameters with new item score updated
      * @param item
-     * @param scoreEnd
      * @returns {*}
      */
-    bindStream = (item, scoreEnd = null) => {
+    bindStream = (item) => {
         const {streamersDataLive} = this.props;
 
         // Find index by userID
@@ -104,8 +109,6 @@ class StreamerItem extends Component {
         // Add or update fields
         newItem.positionTop = this.getPositionByIndex(index);
         newItem.position = index + 1;
-        newItem.scoreStart = scoreEnd || newItem.scoreEnd;
-        newItem.scoreEnd = newItem.score;
         return newItem;
     };
 

@@ -4,15 +4,33 @@ class Counter extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            counter: 0
+            counter: 0,
+            limitNumber: 0
         }
     }
 
+    setLimitNumber = (number) => {
+        this.setState({limitNumber: number});
+    };
+
     increment = () => {
-        const {counter} = this.state;
-        this.setState({
-            counter: counter + 1
-        });
+        const {counter, limitNumber} = this.state;
+        console.log("counter:", counter);
+        console.log("limitNumber:", limitNumber);
+        if (counter < limitNumber) {
+            this.setState({
+                counter: counter + 1
+            });
+        }
+    };
+
+    decrement = () => {
+        const {counter, limitNumber} = this.state;
+        if (counter > limitNumber) {
+            this.setState({
+                counter: counter - 1
+            });
+        }
     };
 
     render() {

@@ -15,8 +15,6 @@ class Counter extends Component {
 
     increment = () => {
         const {counter, limitNumber} = this.state;
-        console.log("counter:", counter);
-        console.log("limitNumber:", limitNumber);
         if (counter < limitNumber) {
             this.setState({
                 counter: counter + 1

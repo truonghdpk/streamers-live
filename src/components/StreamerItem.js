@@ -80,7 +80,7 @@ class StreamerItem extends Component {
 
             // Set max limit
             this.counterRef.current.setLimitNumber(newScore);
-            if (newScore > currentScore) {
+            if (newScore !== currentScore) {
                 // Counter up
                 limitLoop(this.counterRef.current.increment, 1000);
             } else {

@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import styled from 'styled-components';
-import { findWithAttr } from '../utils/common';
+import {findWithAttr, limitLoop} from '../utils/common';
+import Counter from "./Counter";
 
 const LineWrapper = styled.div`
   display: block;
@@ -46,82 +47,94 @@ const ItemScore = styled.div`
 `;
 
 class StreamerItem extends Component {
-  constructor(props) {
-    super(props);
-    const { item } = this.props;
-    this.state = { item: this.bindStream(item) };
-  }
-
-  componentDidUpdate(prevProps) {
-    /**
-     * When streamersDataLive has changed, we will get new index by userId and change rank position
-     */
-    const { streamersDataLive } = this.props;
-    if (prevProps.streamersDataLive !== streamersDataLive) {
-      const { item } = this.state;
-      const { userID } = item;
-      // Find index by userId
-      const index = findWithAttr(streamersDataLive, 'userID', userID);
-      const newItem = streamersDataLive[index];
-
-      // Get old score
-      const indexOldScore = findWithAttr(streamersDataLive, 'userID', userID);
-      const oldItem = streamersDataLive[indexOldScore];
-      const { scoreEnd } = oldItem;
-
-      // Re update item with new item score apply
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ item: this.bindStream(newItem, scoreEnd) });
+    constructor(props) {
+        super(props);
+        const {item} = this.props;
+        this.counterRef = React.createRef();
+        this.state = {
+            item: this.bindStream(item)
+        };
     }
-  }
 
-  /**
-   * By item, this function will recalculation the parameters with new item score updated
-   * @param item
-   * @param scoreEnd
-   * @returns {*}
-   */
-  bindStream = (item, scoreEnd = null) => {
-    const { streamersDataLive } = this.props;
+    componentDidUpdate(prevProps) {
+        /**
+         * When streamersDataLive has changed, we will get new index by userId and change rank position
+         */
+        const {streamersDataLive} = this.props;
+        if (prevProps.streamersDataLive !== streamersDataLive) {
+            const {item} = this.state;
+            const {userID} = item;
+            // Find index by userId
+            const index = findWithAttr(streamersDataLive, 'userID', userID);
+            const newItem = streamersDataLive[index];
 
-    // Find index by userID
-    const index = findWithAttr(streamersDataLive, 'userID', item.userID);
-    // Get new item by new index
-    const newItem = streamersDataLive[index];
+            // Get old score
+            const indexOldScore = findWithAttr(streamersDataLive, 'userID', userID);
+            const oldItem = streamersDataLive[indexOldScore];
+            const {scoreEnd} = oldItem;
 
-    // Add or update fields
-    newItem.positionTop = this.getPositionByIndex(index);
-    newItem.position = index + 1;
-    newItem.scoreStart = scoreEnd || newItem.scoreEnd;
-    newItem.scoreEnd = newItem.score;
-    return newItem;
-  };
+            // Re update item with new item score apply
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({item: this.bindStream(newItem, scoreEnd)});
 
-  /**
-   * Get position to margin top display
-   * @param index
-   * @returns {number}
-   */
-  getPositionByIndex = index => {
-    return index * 46; // Item height, default = 46
-  };
+            // Test bind score
+            limitLoop(this.testBindScore, 30);
+        }
+    }
 
-  render() {
-    const { item } = this.state;
-    return (
-      <LineWrapper top={item.positionTop}>
-        <ItemWrapper>
-          <ItemNumber>{item.position}</ItemNumber>
+    testBindScore = () => {
+        // Get element
+        this.counterRef.current.increment();
+    };
 
-          <ItemStreamerInfo>
-            <ItemStreamerInfoAvatar picturePath={item.picture} />
-            <ItemStreamInfoName>{item.displayName}</ItemStreamInfoName>
-          </ItemStreamerInfo>
-          <ItemScore>1pt</ItemScore>
-        </ItemWrapper>
-      </LineWrapper>
-    );
-  }
+    /**
+     * By item, this function will recalculation the parameters with new item score updated
+     * @param item
+     * @param scoreEnd
+     * @returns {*}
+     */
+    bindStream = (item, scoreEnd = null) => {
+        const {streamersDataLive} = this.props;
+
+        // Find index by userID
+        const index = findWithAttr(streamersDataLive, 'userID', item.userID);
+        // Get new item by new index
+        const newItem = streamersDataLive[index];
+
+        // Add or update fields
+        newItem.positionTop = this.getPositionByIndex(index);
+        newItem.position = index + 1;
+        newItem.scoreStart = scoreEnd || newItem.scoreEnd;
+        newItem.scoreEnd = newItem.score;
+        return newItem;
+    };
+
+    /**
+     * Get position to margin top display
+     * @param index
+     * @returns {number}
+     */
+    getPositionByIndex = index => {
+        return index * 46; // Item height, default = 46
+    };
+
+    render() {
+        const {item} = this.state;
+        return (
+            <LineWrapper top={item.positionTop}>
+                <ItemWrapper>
+                    <ItemNumber>{item.position}</ItemNumber>
+                    <ItemStreamerInfo>
+                        <ItemStreamerInfoAvatar picturePath={item.picture}/>
+                        <ItemStreamInfoName>{item.displayName}</ItemStreamInfoName>
+                    </ItemStreamerInfo>
+                    <ItemScore>
+                        <Counter ref={this.counterRef}/>
+                    </ItemScore>
+                </ItemWrapper>
+            </LineWrapper>
+        );
+    }
 }
 
 export default StreamerItem;

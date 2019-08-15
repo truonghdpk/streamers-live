@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import styled from 'styled-components';
 import StreamerItem from "../components/StreamerItem";
 import Data from '../data/data';
+import {limitLoop} from "../utils/common";
 
 const BoardWrapper = styled.div`
   display: flex;
@@ -21,11 +22,9 @@ class StreamerBoard extends Component {
 
     componentDidMount() {
         // Hit runRandom every 3 seconds to change score of streamers
-        setInterval(() => {
-            this.runRandom();
-        }, 3000);
+        limitLoop(this.runRandom, 3000);
     }
-
+    
     /**
      * Get random number by max and min number
      * @returns {number}

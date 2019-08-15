@@ -70,8 +70,8 @@ class StreamerItem extends Component {
             const newScore = newItem.score;
 
             // Get old score
-            const indexOldScore = findWithAttr(streamersDataLive, 'userID', userID);
-            const oldItem = streamersDataLive[indexOldScore];
+            const indexOldScore = findWithAttr(prevProps.streamersDataLive, 'userID', userID);
+            const oldItem = prevProps.streamersDataLive[indexOldScore];
             const currentScore = oldItem.score;
 
             // Re update item with new item score apply
@@ -79,16 +79,13 @@ class StreamerItem extends Component {
             this.setState({item: this.bindStream(newItem)});
 
             // Set max limit
-            console.log("---------");
-            console.log('new score:', newScore);
-            console.log('current score:', currentScore);
-            // this.counterRef.current.setLimitNumber(newScore);
+            this.counterRef.current.setLimitNumber(newScore);
             if (newScore > currentScore) {
                 // Counter up
-                limitLoop(this.counterRef.current.increment, 30);
+                limitLoop(this.counterRef.current.increment, 1000);
             } else {
                 // Counter down
-                limitLoop(this.counterRef.current.decrement, 30);
+                limitLoop(this.counterRef.current.decrement, 1000);
             }
         }
     }

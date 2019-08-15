@@ -61,8 +61,9 @@ class StreamerBoard extends Component {
       const list = state.streamersDataLive.map((item, index) => {
         // Just update when belong streamerUpdate array
         if (streamerUpdate.indexOf(index) !== -1) {
-          item.score = Math.floor(Math.random() * Math.floor(maxRandomNumber));
-          return item;
+            const assignItem = Object.assign(item,{});
+            assignItem.score = Math.floor(Math.random() * Math.floor(maxRandomNumber));
+          return assignItem;
         }
         return item;
       });
@@ -80,12 +81,12 @@ class StreamerBoard extends Component {
     const { streamersData, streamersDataLive } = this.state;
     return (
       <BoardWrapper>
-        {streamersData.map((item, index) => {
+        {streamersData.map((item) => {
           return (
             <StreamerItem
               streamersDataLive={streamersDataLive}
               item={item}
-              key={index}
+              key={item.userID}
             />
           );
         })}

@@ -54,16 +54,19 @@ class StreamerBoard extends Component {
      * Run update score by random number and sort by desc before return
      */
     runRandom = () => {
-        const maxRandomNumber = 200000;
+        const maxRandomNumber = 300;
         const streamerUpdate = this.getRandomArray();
         let assignItem;
+        let currentScore;
         this.setState(state => {
             // Update all item with new random score number
             const list = state.streamersDataLive.map((item, index) => {
                 // Just update when belong streamerUpdate array
                 if (streamerUpdate.indexOf(index) !== -1) {
                     assignItem = { ...item}; // Same as object assign
-                    assignItem.score = Math.floor(Math.random() * Math.floor(maxRandomNumber));
+                    // Just random counter up
+                    currentScore = assignItem.score;
+                    assignItem.score = currentScore + Math.floor(Math.random() * Math.floor(maxRandomNumber));
                     return assignItem;
                 }
                 return item;

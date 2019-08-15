@@ -56,6 +56,12 @@ class StreamerItem extends Component {
         };
     }
 
+    componentDidMount() {
+        // Set first score value
+        const {item} = this.state;
+        this.counterRef.current.setCounter(item.score);
+    }
+
     componentDidUpdate(prevProps) {
         /**
          * When streamersDataLive has changed, we will get new index by userId and change rank position
@@ -82,10 +88,10 @@ class StreamerItem extends Component {
             this.counterRef.current.setLimitNumber(newScore);
             if (newScore !== currentScore) {
                 // Counter up
-                limitLoop(this.counterRef.current.increment, 1000);
+                limitLoop(this.counterRef.current.increment);
             } else {
                 // Counter down
-                limitLoop(this.counterRef.current.decrement, 1000);
+                limitLoop(this.counterRef.current.decrement);
             }
         }
     }

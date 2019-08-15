@@ -17,10 +17,10 @@ export function findWithAttr(array, attr, value) {
 /**
  * Limit loop using requestAnimationFrame if timeOut have param, interval will by timeOut config
  * @param fn
- * @param fps
+ * @param fps : number = 30 fps
  * @param timeOut
  */
-export function limitLoop(fn, fps, timeOut = null) {
+export function limitLoop(fn, fps = 30, timeOut = null) {
     // Use var then = Date.now(); if you
     // don't care about targeting < IE9
     let then = new Date().getTime();

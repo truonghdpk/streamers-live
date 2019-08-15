@@ -9,10 +9,17 @@ class Counter extends Component {
         }
     }
 
-    setLimitNumber = (number) => {
+    setLimitNumber = number => {
         this.setState({limitNumber: number});
     };
 
+    setCounter = number => {
+        this.setState({counter: number});
+    };
+
+    /**
+     * Counter up
+     */
     increment = () => {
         const {counter, limitNumber} = this.state;
         if (counter < limitNumber) {
@@ -22,6 +29,9 @@ class Counter extends Component {
         }
     };
 
+    /**
+     * Counter down
+     */
     decrement = () => {
         const {counter, limitNumber} = this.state;
         if (counter > limitNumber) {

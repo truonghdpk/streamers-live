@@ -1,128 +1,127 @@
-import React, {Component} from "react";
+import React, { Component } from 'react';
 import styled from 'styled-components';
-import CountUp from 'react-countup';
-import {findWithAttr} from '../utils/common';
+import { findWithAttr } from '../utils/common';
 
 const LineWrapper = styled.div`
-    display: block;
-    position: absolute;
-    top: ${props => props.top}px;
-    width: 100%;
-    transition: all 1s ease-out;
-    background: #fff;
+  display: block;
+  position: absolute;
+  top: ${props => props.top}px;
+  width: 100%;
+  transition: all 1s ease-out;
+  background: #fff;
 `;
 const ItemWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  height: 48px; 
+  height: 48px;
 `;
 const ItemNumber = styled.div`
-    width: 30px;
-    text-align: center;
-    align-self: center;
+  width: 30px;
+  text-align: center;
+  align-self: center;
 `;
 const ItemStreamerInfo = styled.div`
-    flex-grow: 2;
-    align-self: center;
-    display: flex;
-    flex-direction: row;
+  flex-grow: 2;
+  align-self: center;
+  display: flex;
+  flex-direction: row;
 `;
 const ItemStreamerInfoAvatar = styled.div`
-    background-image: url(${props => props.picturePath});
-    background-size: 100%;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    align-self: center;
+  background-image: url(${props => props.picturePath});
+  background-size: 100%;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  align-self: center;
 `;
 const ItemStreamInfoName = styled.div`
-     align-self: center;
-     padding-left: 5px;
+  align-self: center;
+  padding-left: 5px;
 `;
 const ItemScore = styled.div`
-    flex-grow: 1;
-    width: 30px;
-    text-align: right;
-    align-self: center;
+  flex-grow: 1;
+  width: 30px;
+  text-align: right;
+  align-self: center;
 `;
 
 class StreamerItem extends Component {
+  constructor(props) {
+    super(props);
+    const { item } = this.props;
+    this.state = { item: this.bindStream(item) };
+  }
 
+  componentDidUpdate(prevProps) {
     /**
-     * Get position to margin top display
-     * @param index
-     * @returns {number}
+     * When streamersDataLive has changed, we will get new index by userId and change rank position
      */
-    getPositionByIndex = (index) => {
-        return index * 46; // Item height, default = 46
-    };
+    const { streamersDataLive } = this.props;
+    if (prevProps.streamersDataLive !== streamersDataLive) {
+      const { item } = this.state;
+      const { userID } = item;
+      // Find index by userId
+      const index = findWithAttr(streamersDataLive, 'userID', userID);
+      const newItem = streamersDataLive[index];
 
-    /**
-     * By item, this function will recalculation the parameters with new item score updated
-     * @param item
-     * @param scoreEnd
-     * @returns {*}
-     */
-    bindStream = (item, scoreEnd = null) => {
-        const streamersDataLive = this.props.streamersDataLive;
+      // Get old score
+      const indexOldScore = findWithAttr(streamersDataLive, 'userID', userID);
+      const oldItem = streamersDataLive[indexOldScore];
+      const { scoreEnd } = oldItem;
 
-        // Find index by userID
-        const index = findWithAttr(streamersDataLive, "userID", item.userID);
-        // Get new item by new index
-        const newItem = streamersDataLive[index];
-
-        // Add or update fields
-        newItem.positionTop = this.getPositionByIndex(index);
-        newItem.position = index + 1;
-        newItem.scoreStart = scoreEnd ? scoreEnd : newItem.scoreEnd;
-        newItem.scoreEnd = newItem.score;
-        return newItem;
-    };
-
-    state = {
-        item: this.bindStream(this.props.item)
-    };
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        /**
-         * When streamersDataLive has changed, we will get new index by userId and change rank position
-         */
-        if (prevProps.streamersDataLive !== this.props.streamersDataLive) {
-            const userID = this.state.item.userID;
-            // Find index by userId
-            const index = findWithAttr(this.props.streamersDataLive, "userID", userID);
-            const newItem = this.props.streamersDataLive[index];
-
-            // Get old score
-            const indexOldScore = findWithAttr(prevProps.streamersDataLive, "userID", userID);
-            const oldItem = prevProps.streamersDataLive[indexOldScore];
-            const scoreEnd = oldItem.scoreEnd;
-
-            // Re update item with new item score apply
-            this.setState({item: this.bindStream(newItem, scoreEnd)})
-        }
+      // Re update item with new item score apply
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ item: this.bindStream(newItem, scoreEnd) });
     }
+  }
 
-    render() {
-        const item = this.state.item;
-        return (
-            <LineWrapper top={item.positionTop}>
-                <ItemWrapper>
-                    <ItemNumber>
-                        {item.position}
-                    </ItemNumber>
-                    <ItemStreamerInfo>
-                        <ItemStreamerInfoAvatar picturePath={item.picture}/>
-                        <ItemStreamInfoName>{item.displayName}</ItemStreamInfoName>
-                    </ItemStreamerInfo>
-                    <ItemScore>
-                        <CountUp duration={2} start={item.scoreStart} end={item.scoreEnd} suffix={"pt"}>
-                        </CountUp>
-                    </ItemScore>
-                </ItemWrapper>
-            </LineWrapper>
-        )
-    }
+  /**
+   * By item, this function will recalculation the parameters with new item score updated
+   * @param item
+   * @param scoreEnd
+   * @returns {*}
+   */
+  bindStream = (item, scoreEnd = null) => {
+    const { streamersDataLive } = this.props;
+
+    // Find index by userID
+    const index = findWithAttr(streamersDataLive, 'userID', item.userID);
+    // Get new item by new index
+    const newItem = streamersDataLive[index];
+
+    // Add or update fields
+    newItem.positionTop = this.getPositionByIndex(index);
+    newItem.position = index + 1;
+    newItem.scoreStart = scoreEnd || newItem.scoreEnd;
+    newItem.scoreEnd = newItem.score;
+    return newItem;
+  };
+
+  /**
+   * Get position to margin top display
+   * @param index
+   * @returns {number}
+   */
+  getPositionByIndex = index => {
+    return index * 46; // Item height, default = 46
+  };
+
+  render() {
+    const { item } = this.state;
+    return (
+      <LineWrapper top={item.positionTop}>
+        <ItemWrapper>
+          <ItemNumber>{item.position}</ItemNumber>
+
+          <ItemStreamerInfo>
+            <ItemStreamerInfoAvatar picturePath={item.picture} />
+            <ItemStreamInfoName>{item.displayName}</ItemStreamInfoName>
+          </ItemStreamerInfo>
+          <ItemScore>1pt</ItemScore>
+        </ItemWrapper>
+      </LineWrapper>
+    );
+  }
 }
 
-export default StreamerItem
+export default StreamerItem;
